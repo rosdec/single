@@ -1,0 +1,16 @@
+{
+  "name": "helloworld",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node HelloWorldProcessor.js"
+  },
+  "dependencies": {
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.6.9",
+    "node-fetch": "^2.6.1",
+    "sawtooth-sdk": "^1.1.1",
+    "text-encoder": "0.0.4",
+    "text-encoding": "^0.7.0"
+  }
+}

@@ -1,0 +1,67 @@
+version: '2.0'
+
+services:  
+  #container for the transaction processor
+  processor:
+    container_name: processor
+    build:
+      context: .
+      dockerfile: DockerFile
+    depends_on:
+        - validator
+    volumes:
+        - './processor:/processor'
+  
+  #container for Sawtooth REST API, used for the communication between the client and validator
+  sawtooth-rest-api:
+    image: hyperledger/sawtooth-rest-api:chime
+    container_name: rest-api
+    expose:
+      - 8008
+    ports:
+      - "8008:8008"
+    depends_on:
+      - validator
+    entrypoint: sawtooth-rest-api -vv -C tcp://validator:4004 --bind rest-api:8008
+  
+   #container for 'settings-tp', a required transaction processor for all Sawtooth applications, which handles the on-chain configurations
+  settings-tp:
+    image: hyperledger/sawtooth-settings-tp:chime
+    depends_on:
+      - validator
+    entrypoint: settings-tp -vv -C tcp://validator:4004
+  
+  #container for a validator in a Sawtooth network.
+  validator:
+    image: hyperledger/sawtooth-validator:chime
+    container_name: validator
+    expose:
+      - 4004
+    ports:
+      - "4004:4004"
+    entrypoint: "bash -c \"\
+        sawadm keygen && \
+        sawtooth keygen my_key && \
+        sawset genesis -k /root/.sawtooth/keys/my_key.priv && \
+        sawset proposal create \
+          -k /root/.sawtooth/keys/my_key.priv \
+          sawtooth.consensus.algorithm.name=Devmode \
+          sawtooth.consensus.algorithm.version=0.1 \
+          -o config.batch && \
+        sawadm genesis config-genesis.batch config.batch  && \
+        sawtooth-validator -vv \
+          --endpoint tcp://validator:8800 \
+          --bind component:tcp://eth0:4004 \
+          --bind network:tcp://eth0:8800 \
+          --bind consensus:tcp://eth0:5050 \
+        \""
+
+  #default consensus engine for development purposes
+  devmode-engine:
+    image: hyperledger/sawtooth-devmode-engine-rust:chime
+    container_name: sawtooth-devmode-engine-rust-default
+    ports:
+      - '5050:5050'
+    depends_on:
+      - validator
+    entrypoint: devmode-engine-rust -C tcp://validator:5050
