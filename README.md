@@ -1,5 +1,5 @@
 # Single node Hyperledge Sawtooth project
-This repository contains a stripped down version of the repo [HelloWorld-Sawtooth](https://github.com/Kerala-Blockchain-Academy/HelloWorld-Sawtooth) from Kerala Blockchain Academy.
+This repository contains a stripped down version of the repo [HelloWorld-Sawtooth](https://github.com/Kerala-Blockchain-Academy/HelloWorld-Sawtooth) by Kerala Blockchain Academy.
 
 ## Installation
 Follow the stemps to run the simple demo.
